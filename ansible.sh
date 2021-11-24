@@ -1,6 +1,6 @@
 #!/bin/bash
 
-hosts=($(ansible all --list-host -i playbook/inventory/prod.yml))
+hosts=($(ansible all --list-host -i lesson-8-1/inventory/prod.yml))
 for host in ${hosts[@]:1}
 do
 	name=$host
@@ -13,6 +13,6 @@ do
 	docker run --rm --name $name "pycontribs/$host" sleep 99999 &
 done 
 
-ansible-playbook -i playbook/inventory/prod.yml playbook/site.yml --vault-password-file ./secret
+ansible-playbook -i lesson-8-1/inventory/prod.yml playbook/site.yml --vault-password-file ./secret
 
 docker stop $(docker ps -aq)
