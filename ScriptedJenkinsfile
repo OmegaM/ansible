@@ -1,0 +1,28 @@
+node("linux"){
+    stage("Git checkout"){
+        git credentialsId: 'github', url: 'git@github.com:OmegaM/ansible.git'
+    }
+    stage("Sample define secret_check"){
+        secret_check=true
+        prod_run = input(message: 'Is job runing for production?', parameters: [booleanParam(defaultValue: false, name: 'prod_run')])
+    }
+    stage("Run playbook"){
+        
+        if (secret_check){
+            dir('lesson-8-4') {
+                sshagent(credentials: ['github']) {
+                    sh 'ansible-galaxy install -r requirements.yml --force'
+                }
+                if (prod_run){
+                    sh 'ansible-playbook site.yml -i inventory/prod'
+                }else{
+                    sh 'ansible-playbook site.yml -i inventory/prod --check --diff'
+                }
+            }
+        }
+        else{
+            echo 'need more action'
+        }
+
+    }
+}
